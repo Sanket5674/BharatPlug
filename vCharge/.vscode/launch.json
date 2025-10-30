@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "vCharge",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "env": {
+                "FLUTTER_BUILD_MODE": "debug",
+                "FLUTTER_SEMANTICS_ENABLED": "true"
+            }
+        },
+        {
+            "name": "vCharge",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "program": "lib/main.dart",
+            "env": {
+                "FLUTTER_BUILD_MODE": "profile",
+                "FLUTTER_SEMANTICS_ENABLED": "true"
+            }
+        },
+        {
+            "name": "vCharge",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "program": "lib/main.dart",
+            "env": {
+                "FLUTTER_BUILD_MODE": "release",
+                "FLUTTER_SEMANTICS_ENABLED": "true"
+            }
+        },
+        
+    ]
+    
+}
