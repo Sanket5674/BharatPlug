@@ -1,0 +1,113 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+import java.util.Properties
+
+// ───────────────────────────────
+// Load local.properties (for Flutter SDK + versioning)
+// ───────────────────────────────
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty("flutter.sdk")
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define flutter.sdk in local.properties")
+}
+
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
+def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
+
+// ───────────────────────────────
+// Load keystore for release signing (if exists)
+// ───────────────────────────────
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+android {
+    namespace "com.vst.bharatplug"
+    compileSdk 35  // ✅ Official API 35 (Android 15)
+
+    defaultConfig {
+        applicationId "com.vst.bharatplug"
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion 35   // ✅ Matches Play Store requirement
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        multiDexEnabled true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias keystoreProperties["keyAlias"]
+                keyPassword keystoreProperties["keyPassword"]
+                storeFile keystoreProperties["storeFile"] ? file(keystoreProperties["storeFile"]) : null
+                storePassword keystoreProperties["storePassword"]
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+            // ✅ Ensures Flutter builds correctly
+            ndk {
+                debugSymbolLevel 'FULL'
+            }
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+
+    // ✅ Flutter’s build directory integration
+    buildFeatures {
+        buildConfig true
+    }
+
+    packagingOptions {
+        resources {
+            excludes += [
+                    "META-INF/LICENSE",
+                    "META-INF/NOTICE",
+                    "META-INF/DEPENDENCIES"
+            ]
+        }
+    }
+}
+
+dependencies {
+    // ✅ Match Kotlin version to AGP plugin 8.6.0 and Flutter 3.35+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.1.0"
+
+    // ✅ OkHttp3 for backend API communication
+    implementation "com.squareup.okhttp3:okhttp:4.12.0"
+
+    // ✅ Optional: If you use JSON parsing directly with retrofit/gson
+    implementation "com.google.code.gson:gson:2.11.0"
+
+    // ✅ Optional but useful for Flutter WebView hybrid apps
+    implementation "androidx.multidex:multidex:2.0.1"
+}
